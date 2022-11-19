@@ -1,13 +1,22 @@
-<script setup>
-import Navbar from './components/Navbar.vue';
-import BodyPage from './components/BodyPage.vue'
+<script>
+    import Navbar from './components/Navbar.vue';
+    import BodyPage from './components/BodyPage.vue';
+
+    export default {
+      name: 'App',
+      data() {
+        return {
+          
+        }
+      },
+      components: { Navbar, BodyPage },
+      
+    }
 </script>
 
 <template>
   <Navbar />
-  <div class="test">
-    <BodyPage />
-  </div>
+  <BodyPage />
 </template>
 
 <style scoped>
@@ -16,9 +25,5 @@ body {
   padding: 0;
   margin: 0;
 }
-.test {
-  background-color: rgb(240, 238, 238);
-  height: 100vh;
-  margin: 0;
-}
+
 </style>

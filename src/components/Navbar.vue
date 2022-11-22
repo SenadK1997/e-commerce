@@ -1,11 +1,14 @@
 <script>
+import { createApp } from 'vue'
+
 export default {
     data() {
         return {
             dropDown: false,
             showCart: false,
             cartEmpty: true,
-            cartFull: false
+            cartFull: false,
+            articles: ''
         }
     },
     methods: {
@@ -14,7 +17,32 @@ export default {
         },
         toggleCart() {
             this.showCart = !this.showCart
+            if ("products" in localStorage) {
+                this.cartFull = true
+                this.cartEmpty = false
+            } else {
+                this.cartEmpty = true
+                this.cartFull = false
+            }
         },
+        deleteProducts() {
+            localStorage.removeItem('products')
+        },
+    },
+    mounted() {
+        setInterval(() => {
+                let storedProducts = JSON.parse(localStorage.getItem("products"));
+                let articles = storedProducts
+                this.articles = articles
+            if ("products" in localStorage) {
+                this.cartFull = true
+                this.cartEmpty = false
+            } else {
+                this.cartEmpty = true
+                this.cartFull = false
+            }
+        }, 500)
+        // not so proud for this kind of solution
     }
 }
 </script>
@@ -45,19 +73,19 @@ export default {
                             <p v-if="cartEmpty" class="c-section-cart-p">Your cart is empty.</p>
                             <div class="cart-full" v-else="cartFull">
                                 <div class="cart-full-info">   
-                                    <img src="" alt="img">
+                                    <img :src="articles.img" alt="img">
                                     <div class="cart-full-info-box">
                                         <div>
-                                            <p>Fall Limited Edition Snekaers</p>
+                                            <p>{{articles.name}}</p>
                                             <div class="cart-box-prices">
-                                                <p>$125.00</p> <p>x 3</p> <p>$375.00</p>
+                                                <p class="articles-price">${{articles.price}}.00</p><p class="articles-counter"> x{{articles.counter}}</p> <p class="articles-total">${{articles.total}}.00</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <svg width="14" height="16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path d="M0 2.625V1.75C0 1.334.334 1 .75 1h3.5l.294-.584A.741.741 0 0 1 5.213 0h3.571a.75.75 0 0 1 .672.416L9.75 1h3.5c.416 0 .75.334.75.75v.875a.376.376 0 0 1-.375.375H.375A.376.376 0 0 1 0 2.625Zm13 1.75V14.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 14.5V4.375C1 4.169 1.169 4 1.375 4h11.25c.206 0 .375.169.375.375ZM4.5 6.5c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Zm3 0c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Zm3 0c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Z" id="a"/></defs><use fill="#C3CAD9" fill-rule="nonzero" xlink:href="#a"/></svg>
+                                    <svg @click="deleteProducts()" width="14" height="16" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path d="M0 2.625V1.75C0 1.334.334 1 .75 1h3.5l.294-.584A.741.741 0 0 1 5.213 0h3.571a.75.75 0 0 1 .672.416L9.75 1h3.5c.416 0 .75.334.75.75v.875a.376.376 0 0 1-.375.375H.375A.376.376 0 0 1 0 2.625Zm13 1.75V14.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 1 14.5V4.375C1 4.169 1.169 4 1.375 4h11.25c.206 0 .375.169.375.375ZM4.5 6.5c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Zm3 0c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Zm3 0c0-.275-.225-.5-.5-.5s-.5.225-.5.5v7c0 .275.225.5.5.5s.5-.225.5-.5v-7Z" id="a"/></defs><use fill="#C3CAD9" fill-rule="nonzero" xlink:href="#a"/></svg>
                                 </div>
                                 <div class="cart-full-checkout">
-                                    <button @click="pushArticle">Checkout</button>
+                                    <button>Checkout</button>
                                 </div>
                             </div>
                         </div>
@@ -180,6 +208,14 @@ export default {
     justify-content: space-around;
     align-items: center;
 }
+.cart-full-info img {
+    width: 3em;
+    height: 3em;
+    margin-top: 10px;
+}
+.articles-total {
+    font-weight: 700;
+}
 .cart-full-info-box {
     display: flex;
     align-items: center;
@@ -190,10 +226,27 @@ export default {
 }
 .cart-box-prices {
     display: flex;
+    justify-content: space-around;
+    width: 140px;
 }
 .cart-box-prices p {
     padding: 0;
     margin: 0;
+}
+.cart-full-checkout {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    display: flex;
+}
+.cart-full-checkout button {
+    padding: 15px 100px;
+    background-color: hsl(26, 100%, 55%);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
 }
 
 @media (max-width: 500px) {

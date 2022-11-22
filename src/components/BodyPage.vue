@@ -1,4 +1,5 @@
 <script>
+import { stringifyExpression } from '@vue/compiler-core'
 import { toHandlers } from 'vue'
 
 export default {
@@ -10,15 +11,20 @@ export default {
     data() {
         return {
             images: [
-                { url: 'src/logos/image-product-1.jpg', name: 'Fall Limited Edition Sneakers', price: '$125.00' },
-                { url: 'src/logos/image-product-2.jpg', name: 'Patike', price: '$125.00' },
-                { url: 'src/logos/image-product-3.jpg', name: 'Tene', price: '$125.00' },
-                { url: 'src/logos/image-product-4.jpg', name: 'Cizme', price: '$125.00' },
+                { url: 'src/logos/image-product-1.jpg', name: 'Fall Limited Edition Sneakers', price: 125.00 },
+                { url: 'src/logos/image-product-2.jpg', name: 'Patike', price: 125.00 },
+                { url: 'src/logos/image-product-3.jpg', name: 'Tene', price: 125.00 },
+                { url: 'src/logos/image-product-4.jpg', name: 'Cizme', price: 125.00 },
             ],
-            activePhoto: { url: 'src/logos/image-product-1.jpg', name: 'Fall Limited Edition Sneakers', price: '$125.00' },
-            counter: 0,
+            activePhoto: { url: 'src/logos/image-product-1.jpg', name: 'Fall Limited Edition Sneakers', price: 125.00 },
+            counter: 1,
             cart: [],
-            price: 0
+            price: 0,
+            priceTotal: 0,
+            imgSrc: '',
+            articleName: '',
+            articles: '',
+            album: false
         }
     },
     methods: {
@@ -27,35 +33,50 @@ export default {
         },
         counterDec() {
             this.counter--
-            if (this.counter <= -1) {
-                this.counter = 0
+            if (this.counter <= 0) {
+                this.counter = 1
             }
         },
-        /* pushArticle() {
-            let shownCart = []
-                shownCart = this.activePhoto.name + this.activePhoto.price
-                console.log(shownCart)
-            return shownCart;
-        }, */
         pushArticle() {
             let images = this.activePhoto
             let shownCart = []
             for (let x in images) {
-                shownCart = images.name;
+                this.imgSrc = images.url
+                this.price = images.price
+                this.priceTotal = images.price * this.counter
+                this.articleName = images.name
+                shownCart = 
+                     {name: this.articleName, counter: this.counter, price: this.price, total: this.priceTotal, img: this.imgSrc }
             }
-            console.log(shownCart)
+            /* console.log(shownCart) */
+            let products = [];
+            products = ("shownCart", shownCart)
+            localStorage.setItem("products", JSON.stringify(products));
+            let storedProducts = JSON.parse(localStorage.getItem("products"));
+            this.articles = storedProducts
             return shownCart;
-
+            // emitaj ga u NAVBAR i napravi if else u cart
         }
     },
 }
 </script>
 
 <template>
+    <div class="album" v-if="album">
+        <div class="album-parent">    
+            <svg @click="album = false" width="14" height="15" xmlns="http://www.w3.org/2000/svg"><path d="m11.596.782 2.122 2.122L9.12 7.499l4.597 4.597-2.122 2.122L7 9.62l-4.595 4.597-2.122-2.122L4.878 7.5.282 2.904 2.404.782l4.595 4.596L11.596.782Z" fill="#fff" fill-rule="evenodd"/></svg>
+            <div class="album-parent__bigImage">
+                <img :src="activePhoto.url" alt="Big image">
+            </div>
+            <div class="album-parent__smalImages" >
+                <img :src="image.url" alt="1" v-for="image in images" @click="activePhoto = image" :class="{ 'is-active': image.name === activePhoto.name }">
+            </div>
+        </div>
+    </div>
     <section class="c-section">
         <div class="c-section__left">
             <div class="c-section__left-bigImg">
-                <img :src="activePhoto.url" alt="Big image">
+                <img :src="activePhoto.url" alt="Big image" @click="album = true">
             </div>
             <div class="c-section__left-smallImg" >
                 <img :src="image.url" alt="1" v-for="image in images" @click="activePhoto = image" :class="{ 'is-active': image.name === activePhoto.name }">
@@ -88,6 +109,60 @@ export default {
 </template>
 
 <style scoped>
+.album {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    max-width: 1268px;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    margin: 0 auto;
+    position: absolute;
+    height: 100vh;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+}
+
+.album-parent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+}
+.album-parent svg {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    left: 430px;
+    top: -20px;
+    cursor: pointer;
+}
+.album-parent__bigImage img{
+    display: flex;
+    height: 430px;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 15px;
+}
+.album-parent__smalImages {
+    display: flex;
+    flex-direction: row;
+    width: 450px;
+    max-width: 450px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+.album-parent__smalImages img {
+    width: 100%;
+    max-width: 90px;
+    border-radius: 15px;
+    cursor: pointer;
+}
 .c-section {
     display: flex;
     margin: 0 auto;
@@ -110,6 +185,7 @@ export default {
     width: 100%;
     max-width: 500px;
     border-radius: 15px;
+    cursor: pointer;
 }
 .c-section__left-smallImg {
     display: flex;

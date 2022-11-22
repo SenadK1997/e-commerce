@@ -21,7 +21,7 @@ export default {
             cart: [],
             price: 0,
             priceTotal: 0,
-            imgSrc: '',
+            imgSrc: [],
             articleName: '',
             articles: '',
             album: false
@@ -42,6 +42,7 @@ export default {
             let shownCart = []
             for (let x in images) {
                 this.imgSrc = images.url
+                console.log(this.imgSrc)
                 this.price = images.price
                 this.priceTotal = images.price * this.counter
                 this.articleName = images.name
@@ -56,6 +57,11 @@ export default {
             this.articles = storedProducts
             return shownCart;
             // emitaj ga u NAVBAR i napravi if else u cart
+        },
+        getImgsUrl() {
+            for (let x in this.images.url) {
+                this.imgSrc = images
+            }
         }
     },
 }
@@ -63,8 +69,16 @@ export default {
 
 <template>
     <div class="album" v-if="album">
-        <div class="album-parent">    
-            <svg @click="album = false" width="14" height="15" xmlns="http://www.w3.org/2000/svg"><path d="m11.596.782 2.122 2.122L9.12 7.499l4.597 4.597-2.122 2.122L7 9.62l-4.595 4.597-2.122-2.122L4.878 7.5.282 2.904 2.404.782l4.595 4.596L11.596.782Z" fill="#fff" fill-rule="evenodd"/></svg>
+        <div class="album-parent">
+            <div class="album-parent__arrows">
+                <div class="album-parent__arrows-div-l">
+                    <svg width="13" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M11 1 3 9l8 8" stroke="#1D2026" stroke-width="3" fill="none" fill-rule="evenodd"/></svg>
+                </div>
+                <div class="album-parent__arrows-div-r">
+                    <svg width="13" height="18" xmlns="http://www.w3.org/2000/svg"><path d="m2 1 8 8-8 8" stroke="#1D2026" stroke-width="3" fill="none" fill-rule="evenodd"/></svg>
+                </div>
+            </div>
+            <svg @click="album = false" width="14" height="15" xmlns="http://www.w3.org/2000/svg" class="album-parent-svg"><path d="m11.596.782 2.122 2.122L9.12 7.499l4.597 4.597-2.122 2.122L7 9.62l-4.595 4.597-2.122-2.122L4.878 7.5.282 2.904 2.404.782l4.595 4.596L11.596.782Z" fill="hsl(25, 100%, 94%)" fill-rule="evenodd"/></svg>
             <div class="album-parent__bigImage">
                 <img :src="activePhoto.url" alt="Big image">
             </div>
@@ -73,6 +87,7 @@ export default {
             </div>
         </div>
     </div>
+
     <section class="c-section">
         <div class="c-section__left">
             <div class="c-section__left-bigImg">
@@ -133,7 +148,30 @@ export default {
     justify-content: center;
     margin: 0 auto;
 }
-.album-parent svg {
+.album-parent__arrows {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    width: 450px;
+    align-items: center;
+}
+.album-parent__arrows-div-l {
+    padding: 15px 20px;
+    background-color: #fff;
+    border-radius: 99px;
+    align-items: center;
+    cursor: pointer;
+    transform: translateX(-30px);
+}
+.album-parent__arrows-div-r {
+    padding: 15px 20px;
+    background-color: #fff;
+    border-radius: 99px;
+    align-items: center;
+    cursor: pointer;
+    transform: translateX(30px);
+}
+.album-parent-svg {
     position: relative;
     display: flex;
     justify-content: flex-end;
@@ -162,6 +200,13 @@ export default {
     max-width: 90px;
     border-radius: 15px;
     cursor: pointer;
+}
+.album-parent__smalImages img:hover {
+    opacity: 50%;
+}
+.album-parent__smalImages .is-active {
+    opacity: 30%;
+    border: 3px solid hsl(26, 100%, 55%);
 }
 .c-section {
     display: flex;
